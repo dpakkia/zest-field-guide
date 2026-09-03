@@ -94,7 +94,7 @@
     .progress-wrap{
       margin-top:8px;
       display:grid;
-      grid-template-columns:1fr auto;
+      grid-template-columns:1fr auto auto;
       gap:10px;
       align-items:center;
     }
@@ -317,7 +317,27 @@
       flex-wrap:wrap;
       margin:10px 0 0;
     }
-    .btn{
+	.sync-status{
+	  font-size:.68rem;
+ 	 font-weight:900;
+  	letter-spacing:.08em;
+  	color:var(--muted);
+  	white-space:nowrap;
+	}
+
+	.sync-status.synced{
+  	color:#d4d4d8;
+	}
+
+	.sync-status.pending{
+  	color:#f4f4f5;
+	}
+
+	.sync-status.offline{
+  	color:#71717a;
+	}
+    
+	.btn{
       border:1px solid var(--line);
       background:#151518;
       color:var(--text);
@@ -375,6 +395,7 @@
       <div class="progress-wrap">
         <div class="progressbar"><div id="overallBar"></div></div>
         <div class="progress-label" id="overallLabel">0 / 0</div>
+		<div class="sync-status" id="syncStatus">LOCAL</div>
       </div>
     </div>
 
@@ -1207,60 +1228,441 @@ MON   READY → LAST → END</div>
       ZEST / BOLLE DI MALTO — reels + stories field guide · checkbox state is saved on this device
     </footer>
   </div>
-
 <script>
 (() => {
-  const KEY = 'zest-bolle-checks-v1';
-  const checks = [...document.querySelectorAll('input[type="checkbox"][data-id]')];
+  const EVENT_ID = "bolle26";
 
-  function load() {
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) {}
-    checks.forEach(c => c.checked = !!saved[c.dataset.id]);
+  const LEGACY_KEY = "zest-bolle-checks-v1";
+  const STATE_KEY = `zest-field-state-v2:${EVENT_ID}`;
+  const QUEUE_KEY = `zest-field-queue-v1:${EVENT_ID}`;
+
+  const checks = [
+    ...document.querySelectorAll(
+      'input[type="checkbox"][data-id]'
+    )
+  ];
+
+  let syncing = false;
+
+  function readJSON(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key)) ?? fallback;
+    } catch {
+      return fallback;
+    }
   }
 
-  function save() {
-    const state = {};
-    checks.forEach(c => state[c.dataset.id] = c.checked);
-    localStorage.setItem(KEY, JSON.stringify(state));
+  function writeJSON(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
   }
+
+
+  // --------------------------------------------------
+  // LOCAL STATE
+  // --------------------------------------------------
+
+  function loadState() {
+    let state = readJSON(STATE_KEY, null);
+
+    if (state) return state;
+
+    // Migrate existing checkbox state from the old site.
+    const legacy = readJSON(LEGACY_KEY, null);
+
+    state = {};
+
+    if (legacy) {
+      for (const [itemId, checked] of Object.entries(legacy)) {
+        state[itemId] = {
+          checked: !!checked,
+
+          // Intentionally ancient.
+          // Any real remote edit will win over legacy data.
+          updated_at: 1
+        };
+      }
+
+      writeJSON(STATE_KEY, state);
+
+      // Queue legacy values so an empty remote DB
+      // can be initialized from the existing device.
+      const queue = Object.entries(state).map(
+        ([item_id, item]) => ({
+          item_id,
+          checked: item.checked,
+          client_updated_at: item.updated_at
+        })
+      );
+
+      writeJSON(QUEUE_KEY, queue);
+    }
+
+    return state;
+  }
+
+
+  function saveState(state) {
+    writeJSON(STATE_KEY, state);
+  }
+
+
+  function applyStateToUI(state) {
+    checks.forEach(check => {
+      const item = state[check.dataset.id];
+
+      check.checked = item
+        ? !!item.checked
+        : false;
+    });
+
+    updateProgress();
+  }
+
+
+  // --------------------------------------------------
+  // QUEUE
+  // --------------------------------------------------
+
+  function loadQueue() {
+    return readJSON(QUEUE_KEY, []);
+  }
+
+
+  function saveQueue(queue) {
+    writeJSON(QUEUE_KEY, queue);
+  }
+
+
+  function enqueue(change) {
+    let queue = loadQueue();
+
+    // Keep only the newest pending change for each item.
+    queue = queue.filter(
+      item => item.item_id !== change.item_id
+    );
+
+    queue.push(change);
+
+    saveQueue(queue);
+    updateSyncIndicator();
+  }
+
+
+  // --------------------------------------------------
+  // UI
+  // --------------------------------------------------
 
   function updateProgress() {
     const done = checks.filter(c => c.checked).length;
     const total = checks.length;
-    document.getElementById('overallLabel').textContent = `${done} / ${total}`;
-    document.getElementById('overallBar').style.width = `${total ? (done/total)*100 : 0}%`;
 
-    document.querySelectorAll('.section-count').forEach(el => {
-      const sec = el.dataset.for;
-      const list = checks.filter(c => c.dataset.section === sec);
-      const secDone = list.filter(c => c.checked).length;
-      el.textContent = `${secDone} / ${list.length}`;
-    });
+    document.getElementById("overallLabel").textContent =
+      `${done} / ${total}`;
+
+    document.getElementById("overallBar").style.width =
+      `${total ? (done / total) * 100 : 0}%`;
+
+    document
+      .querySelectorAll(".section-count")
+      .forEach(el => {
+        const sec = el.dataset.for;
+
+        const list = checks.filter(
+          c => c.dataset.section === sec
+        );
+
+        const secDone = list.filter(
+          c => c.checked
+        ).length;
+
+        el.textContent =
+          `${secDone} / ${list.length}`;
+      });
   }
 
-  checks.forEach(c => c.addEventListener('change', () => {
-    save();
+
+  function updateSyncIndicator() {
+    const el = document.getElementById("syncStatus");
+
+    if (!el) return;
+
+    el.className = "sync-status";
+
+    if (!navigator.onLine) {
+      el.textContent = "OFFLINE";
+      el.classList.add("offline");
+      return;
+    }
+
+    const pending = loadQueue().length;
+
+    if (syncing) {
+      el.textContent = "SYNCING…";
+      el.classList.add("pending");
+      return;
+    }
+
+    if (pending > 0) {
+      el.textContent = `↑ ${pending} PENDING`;
+      el.classList.add("pending");
+      return;
+    }
+
+    el.textContent = "SYNCED";
+    el.classList.add("synced");
+  }
+
+
+  // --------------------------------------------------
+  // LOCAL CHANGE
+  // --------------------------------------------------
+
+  function localChange(check) {
+    const state = loadState();
+
+    const timestamp = Date.now();
+
+    state[check.dataset.id] = {
+      checked: check.checked,
+      updated_at: timestamp
+    };
+
+    saveState(state);
+
+    enqueue({
+      item_id: check.dataset.id,
+      checked: check.checked,
+      client_updated_at: timestamp
+    });
+
     updateProgress();
-  }));
 
-  document.getElementById('resetChecks').addEventListener('click', () => {
-    if (!confirm('Reset every shot and audio checkbox?')) return;
-    checks.forEach(c => c.checked = false);
-    save();
-    updateProgress();
+    // Don't block UI waiting for network.
+    sync().catch(() => {});
+  }
+
+
+  // --------------------------------------------------
+  // UPLOAD LOCAL QUEUE
+  // --------------------------------------------------
+
+  async function flushQueue() {
+    let queue = loadQueue();
+
+    while (queue.length > 0) {
+      const change = queue[0];
+
+      const response = await fetch("/api/state", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          event_id: EVENT_ID,
+          item_id: change.item_id,
+          checked: change.checked,
+          client_updated_at:
+            change.client_updated_at
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `POST state failed: ${response.status}`
+        );
+      }
+
+      // Remove only the item we just successfully handled.
+      queue = loadQueue().filter(item =>
+        !(
+          item.item_id === change.item_id &&
+          item.client_updated_at ===
+            change.client_updated_at
+        )
+      );
+
+      saveQueue(queue);
+      updateSyncIndicator();
+    }
+  }
+
+
+  // --------------------------------------------------
+  // DOWNLOAD + MERGE REMOTE STATE
+  // --------------------------------------------------
+
+  async function fetchRemoteState() {
+    const response = await fetch(
+      `/api/state?event=${encodeURIComponent(EVENT_ID)}`,
+      {
+        cache: "no-store"
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `GET state failed: ${response.status}`
+      );
+    }
+
+    const remote = await response.json();
+
+    const state = loadState();
+
+    for (const row of remote.items ?? []) {
+      const itemId = row.item_id;
+
+      // PostgreSQL BIGINT may arrive as a string.
+      const remoteTime =
+        Number(row.client_updated_at) || 0;
+
+      const localTime =
+        Number(state[itemId]?.updated_at) || 0;
+
+      // Newest edit wins.
+      if (remoteTime > localTime) {
+        state[itemId] = {
+          checked: !!row.checked,
+          updated_at: remoteTime
+        };
+      }
+    }
+
+    saveState(state);
+    applyStateToUI(state);
+  }
+
+
+  // --------------------------------------------------
+  // COMPLETE SYNC
+  // --------------------------------------------------
+
+  async function sync() {
+    if (syncing) return;
+    if (!navigator.onLine) {
+      updateSyncIndicator();
+      return;
+    }
+
+    syncing = true;
+    updateSyncIndicator();
+
+    try {
+      // Local unsent work goes first.
+      await flushQueue();
+
+      // Then retrieve whatever other devices changed.
+      await fetchRemoteState();
+
+    } catch (error) {
+      console.warn("Sync failed:", error);
+
+    } finally {
+      syncing = false;
+      updateSyncIndicator();
+    }
+  }
+
+
+  // --------------------------------------------------
+  // EVENTS
+  // --------------------------------------------------
+
+  checks.forEach(check => {
+    check.addEventListener("change", () => {
+      localChange(check);
+    });
   });
 
-  document.getElementById('expandAll').addEventListener('click', () => {
-    document.querySelectorAll('details').forEach(d => d.open = true);
+
+  window.addEventListener("online", () => {
+    sync();
   });
 
-  document.getElementById('collapseAll').addEventListener('click', () => {
-    document.querySelectorAll('details').forEach(d => d.open = false);
+
+  window.addEventListener("offline", () => {
+    updateSyncIndicator();
   });
 
-  load();
-  updateProgress();
+
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (document.visibilityState === "visible") {
+        sync();
+      }
+    }
+  );
+
+
+  // Poll only while app is visible.
+  setInterval(() => {
+    if (
+      document.visibilityState === "visible" &&
+      navigator.onLine
+    ) {
+      sync();
+    }
+  }, 15000);
+
+
+  // --------------------------------------------------
+  // EXISTING CONTROLS
+  // --------------------------------------------------
+
+  document
+    .getElementById("resetChecks")
+    .addEventListener("click", () => {
+
+      if (
+        !confirm(
+          "Reset every shot and audio checkbox?"
+        )
+      ) return;
+
+      checks.forEach(check => {
+        if (check.checked) {
+          check.checked = false;
+          localChange(check);
+        }
+      });
+
+      updateProgress();
+    });
+
+
+  document
+    .getElementById("expandAll")
+    .addEventListener("click", () => {
+      document
+        .querySelectorAll("details")
+        .forEach(d => d.open = true);
+    });
+
+
+  document
+    .getElementById("collapseAll")
+    .addEventListener("click", () => {
+      document
+        .querySelectorAll("details")
+        .forEach(d => d.open = false);
+    });
+
+
+  // --------------------------------------------------
+  // STARTUP
+  // --------------------------------------------------
+
+  const initialState = loadState();
+
+  applyStateToUI(initialState);
+  updateSyncIndicator();
+
+  // Render local instantly, sync remotely afterward.
+  sync();
+
 })();
 </script>
 <script>

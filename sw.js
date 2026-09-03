@@ -1,4 +1,4 @@
-const CACHE_NAME = "zest-field-guide-v1";
+const CACHE_NAME = "zest-field-guide-v2";
 
 const ASSETS = [
   "/",
@@ -30,6 +30,11 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
+
+  const url = new URL(event.request.url);
+
+  // Never cache API state.
+  if (url.pathname.startsWith("/api/")) return;
 
   event.respondWith(
     fetch(event.request)

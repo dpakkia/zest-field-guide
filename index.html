@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ZEST — Bolle di Malto Reel Field Guide</title>
+  <style>
+    :root{
+      --bg:#0b0b0c;
+      --panel:#121214;
+      --panel2:#18181b;
+      --line:#2b2b31;
+      --text:#f4f4f5;
+      --muted:#a1a1aa;
+      --soft:#71717a;
+      --accent:#fafafa;
+      --ok:#d4d4d8;
+      --radius:18px;
+      --shadow:0 10px 35px rgba(0,0,0,.28);
+      --pad:16px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--bg)}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter, "SF Pro Display", "SF Pro Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height:1.5;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    button,input{font:inherit}
+    .shell{max-width:920px;margin:0 auto;padding:0 14px 80px}
+    .hero{
+      padding:calc(22px + env(safe-area-inset-top)) 2px 18px;
+    }
+    .eyebrow{
+      font-size:.75rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:800;
+    }
+    h1{
+      font-size:clamp(2.35rem,11vw,5.4rem);
+      line-height:.9;
+      margin:.28rem 0 .8rem;
+      letter-spacing:-.055em;
+      text-transform:uppercase;
+      font-weight:950;
+    }
+    .lede{
+      color:#d4d4d8;
+      max-width:50rem;
+      margin:0;
+      font-size:1rem;
+    }
+    .sticky{
+      position:sticky;
+      top:0;
+      z-index:30;
+      margin:0 -14px 18px;
+      padding:8px 14px 10px;
+      background:linear-gradient(to bottom,rgba(11,11,12,.98),rgba(11,11,12,.88));
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .nav{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      padding:2px 0 5px;
+    }
+    .nav::-webkit-scrollbar{display:none}
+    .nav a{
+      white-space:nowrap;
+      border:1px solid var(--line);
+      background:var(--panel);
+      padding:10px 13px;
+      border-radius:999px;
+      font-size:.82rem;
+      font-weight:800;
+      color:#d4d4d8;
+    }
+    .nav a:active{transform:scale(.98)}
+    .progress-wrap{
+      margin-top:8px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+    .progressbar{
+      height:7px;
+      background:#25252a;
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .progressbar > div{
+      height:100%;
+      width:0;
+      background:var(--accent);
+      transition:width .2s ease;
+    }
+    .progress-label{
+      font-variant-numeric:tabular-nums;
+      color:var(--muted);
+      font-size:.75rem;
+      min-width:58px;
+      text-align:right;
+    }
+    section{scroll-margin-top:110px;margin:24px 0 34px}
+    .section-title{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin:0 2px 12px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size:1.55rem;
+      letter-spacing:-.035em;
+    }
+    .section-title .count{
+      color:var(--muted);
+      font-size:.8rem;
+      white-space:nowrap;
+    }
+    .card{
+      background:linear-gradient(180deg,var(--panel),#101012);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      margin:12px 0;
+    }
+    .card .pad{padding:16px}
+    .kicker{
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      font-size:.69rem;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .big-word{
+      font-size:clamp(2.8rem,15vw,6rem);
+      font-weight:950;
+      letter-spacing:-.07em;
+      line-height:.9;
+      margin:.18rem 0 .9rem;
+      text-transform:uppercase;
+    }
+    .meta{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+      margin-top:12px;
+    }
+    .meta > div{
+      padding:10px 11px;
+      background:var(--panel2);
+      border:1px solid #27272c;
+      border-radius:12px;
+    }
+    .meta strong{
+      display:block;
+      font-size:.72rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:3px;
+    }
+    .meta span{font-size:.9rem}
+    details{
+      border-top:1px solid var(--line);
+      background:rgba(255,255,255,.01);
+    }
+    details:first-of-type{border-top:none}
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:14px 16px;
+      font-weight:850;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    summary::-webkit-details-marker{display:none}
+    summary::after{
+      content:"+";
+      color:var(--muted);
+      font-size:1.25rem;
+      line-height:1;
+    }
+    details[open] summary::after{content:"–"}
+    .details-body{
+      padding:0 16px 16px;
+      color:#d4d4d8;
+    }
+    .details-body p:first-child{margin-top:0}
+    .details-body p:last-child{margin-bottom:0}
+    .shotlist{
+      display:grid;
+      gap:9px;
+      padding:0 10px 10px;
+    }
+    .shot{
+      display:grid;
+      grid-template-columns:30px 1fr;
+      gap:10px;
+      align-items:start;
+      padding:12px;
+      border:1px solid #28282e;
+      border-radius:14px;
+      background:#101012;
+    }
+    .shot:has(input:checked){
+      opacity:.58;
+      background:#0e0e10;
+    }
+    .shot input{
+      appearance:none;
+      width:24px;
+      height:24px;
+      border:2px solid #57575f;
+      border-radius:7px;
+      margin:1px 0 0;
+      display:grid;
+      place-items:center;
+      background:#151518;
+      touch-action:manipulation;
+    }
+    .shot input:checked{
+      background:#f4f4f5;
+      border-color:#f4f4f5;
+    }
+    .shot input:checked::after{
+      content:"✓";
+      color:#0b0b0c;
+      font-weight:950;
+      font-size:16px;
+      line-height:1;
+    }
+    .shot-head{
+      display:flex;
+      gap:8px;
+      align-items:baseline;
+      flex-wrap:wrap;
+      margin-bottom:5px;
+    }
+    .shot-id{
+      color:var(--muted);
+      font-size:.74rem;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    .shot-title{
+      font-weight:900;
+      letter-spacing:-.015em;
+    }
+    .shot p{
+      margin:0;
+      color:#c9c9cf;
+      font-size:.91rem;
+    }
+    .shot .sub{
+      margin-top:5px;
+      color:var(--muted);
+      font-size:.82rem;
+    }
+    .callout{
+      padding:14px 15px;
+      border-left:3px solid #f4f4f5;
+      background:#151518;
+      border-radius:0 12px 12px 0;
+      margin:12px 0;
+      color:#e4e4e7;
+    }
+    .rule-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    .rule{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:13px 14px;
+      background:#111113;
+    }
+    .rule strong{display:block;margin-bottom:3px}
+    .rule span{color:var(--muted);font-size:.9rem}
+    .sound-code{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      background:#0a0a0b;
+      border:1px solid #2a2a30;
+      border-radius:12px;
+      padding:12px 13px;
+      overflow:auto;
+      white-space:pre-wrap;
+      color:#f4f4f5;
+      font-size:.88rem;
+    }
+    .toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin:10px 0 0;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background:#151518;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:800;
+      font-size:.82rem;
+    }
+    .btn.danger{color:#d4d4d8}
+    .tiny{color:var(--soft);font-size:.75rem}
+    footer{
+      margin-top:36px;
+      padding:20px 4px calc(18px + env(safe-area-inset-bottom));
+      color:var(--soft);
+      font-size:.78rem;
+      text-align:center;
+    }
+    @media(min-width:700px){
+      :root{--pad:22px}
+      .shell{padding-left:22px;padding-right:22px}
+      .sticky{margin-left:-22px;margin-right:-22px;padding-left:22px;padding-right:22px}
+      .rule-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .meta{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .shot{grid-template-columns:34px 1fr}
+    }
+    @media print{
+      .sticky,.toolbar{display:none}
+      body{background:white;color:black}
+      .card,.shot,.rule{box-shadow:none;background:white;color:black;border-color:#bbb}
+      .shot p,.shot .sub,.details-body,.lede,.rule span{color:#333}
+      details{display:block}
+      details > *{display:block}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero" id="top">
+      <div class="eyebrow">ZEST / FIELD GUIDE 001</div>
+      <h1>Bolle di Malto</h1>
+      <p class="lede">Three reels, one visual language. Use this on-site as a practical shooting checklist without losing the creative reasoning behind every choice.</p>
+    </header>
+
+    <div class="sticky">
+      <nav class="nav" aria-label="Sections">
+        <a href="#identity">Identity</a>
+        <a href="#prepare">01 Prepare</a>
+        <a href="#pulse">02 Pulse</a>
+        <a href="#after">03 After</a>
+        <a href="#stories">Stories</a>
+        <a href="#audio">Audio</a>
+        <a href="#daily">Daily</a>
+        <a href="#grammar">Grammar</a>
+      </nav>
+      <div class="progress-wrap">
+        <div class="progressbar"><div id="overallBar"></div></div>
+        <div class="progress-label" id="overallLabel">0 / 0</div>
+      </div>
+    </div>
+
+    <section id="identity">
+      <div class="section-title">
+        <h2>Visual identity</h2>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="kicker">The baseline</div>
+          <div class="big-word">CONTROLLED<br>ENERGY</div>
+          <p>Outside the counter: crowds, music, lights, movement, beer, festival. Inside the counter: precision, hands, ice, glass, metal, repetition, concentration.</p>
+          <div class="callout"><strong>Zest should not visually compete with the festival by being louder.</strong><br>It should feel like the precise, elegant and controlled exception inside the energy.</div>
+        </div>
+
+        <details open>
+          <summary>Typography & title-mask treatment</summary>
+          <div class="details-body">
+            <p>Use an elegant but bold sans serif. Primary suggestion: <strong>Inter Tight ExtraBold / Black</strong>. Alternatives: Neue Haas Grotesk Display Bold or Helvetica Now Display Bold.</p>
+            <p>Titles are <strong>one meaningful word</strong>, uppercase, large, white or slightly warm white, with no outline or shadow. The foreground subject is masked so part of the word sits behind the person, hand, bottle, or tool.</p>
+            <p>Only roughly <strong>15–30% of the letters should be occluded</strong>. It must read instantly. The title should exist for roughly 0.7–1.2 seconds, then disappear while the shot continues.</p>
+            <p>Whenever possible, use a locked or controlled shot with clean subject/background separation to make masking fast and elegant.</p>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Cover system</summary>
+          <div class="details-body">
+            <p>The title shot is also the cover concept. After getting the moving shot, keep the composition and take a higher-resolution still/RAW photograph.</p>
+            <p>Keep the title and important subject within the central 3:4 profile-grid-safe region while composing the 9:16 master.</p>
+            <p>All three covers use the same grammar: <strong>human/action + large word + word partly behind subject</strong>. Same typography, different emotional state.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>What should stay consistent later</summary>
+          <div class="details-body">
+            <p>Do not standardize a mandatory logo intro/outro. The identity is subtler: one-word title, subject-over-type masking, controlled composition, real sound, restrained slow motion, work rather than product, and quiet endings.</p>
+            <p>Later this can naturally become PRACTICE, SERVICE, STIR, POUR, BUILD, CLOSE, RESET, SHIFT, etc.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="prepare" data-section="prepare">
+      <div class="section-title">
+        <h2>01 — PREPARE</h2>
+        <div class="count section-count" data-for="prepare">0 / 0</div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="kicker">Ritual / readiness</div>
+          <div class="big-word">PREPARE</div>
+          <div class="meta">
+            <div><strong>Length</strong><span>16–20 s</span></div>
+            <div><strong>Voice</strong><span>None</span></div>
+            <div><strong>Music</strong><span>None</span></div>
+            <div><strong>Story</strong><span>Empty → ready</span></div>
+          </div>
+        </div>
+
+        <details open>
+          <summary>Creative direction</summary>
+          <div class="details-body">
+            <p>This is the purest statement of Zest’s identity: preparation as ritual. It should feel deliberate, tactile and almost documentary. Sound carries the edit.</p>
+            <p>Do not rush. Let isolated actions have weight. The moment the bar is ready, introduce the distant festival ambience as the world outside suddenly becoming audible.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P01">
+          <div>
+            <div class="shot-head"><span class="shot-id">P01</span><span class="shot-title">TITLE / COVER</span></div>
+            <p><strong>24–35 mm, locked vertical medium-wide.</strong> Bartender enters frame behind counter and starts arranging something. Leave negative space across torso/background for the title.</p>
+            <div class="sub">Sound: room tone / footsteps. PREPARE appears behind bartender. Hold 1.5–2 s total. Take a RAW still afterward.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P02">
+          <div>
+            <div class="shot-head"><span class="shot-id">P02</span><span class="shot-title">Case / tool landing</span></div>
+            <p><strong>35–50 mm, very low close-up.</strong> Box, crate, tool roll or equipment lands firmly onto surface.</p>
+            <div class="sub">Sound: THUD. Hard cut exactly on impact.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P03">
+          <div>
+            <div class="shot-head"><span class="shot-id">P03</span><span class="shot-title">Bottles lined up</span></div>
+            <p><strong>50–70 mm, static profile.</strong> One bottle placed beside the others. Do not reveal the whole finished arrangement immediately.</p>
+            <div class="sub">Sound: glass CLACK.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P04">
+          <div>
+            <div class="shot-head"><span class="shot-id">P04</span><span class="shot-title">Ice bin opened</span></div>
+            <p><strong>35–50 mm close.</strong> Lid, fridge or ice container opens.</p>
+            <div class="sub">Sound: hinge + cold ambience. Very short shot.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P05">
+          <div>
+            <div class="shot-head"><span class="shot-id">P05</span><span class="shot-title">Ice scoop</span></div>
+            <p><strong>70 mm tight.</strong> Scoop cuts through a large amount of ice.</p>
+            <div class="sub">Sound: SCRRRRSH. Good 50 fps visual candidate, but record real-time audio separately.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P06">
+          <div>
+            <div class="shot-head"><span class="shot-id">P06</span><span class="shot-title">Citrus cut</span></div>
+            <p><strong>50–70 mm, side-on.</strong> One decisive knife cut.</p>
+            <div class="sub">Sound: CHOP. Prefer 25 fps so it feels sharp, not dreamy.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P07">
+          <div>
+            <div class="shot-head"><span class="shot-id">P07</span><span class="shot-title">Peel / garnish prep</span></div>
+            <p><strong>Tight.</strong> One controlled preparation movement.</p>
+            <div class="sub">Sound: scrape / knife / board. Optional 50 fps.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P08">
+          <div>
+            <div class="shot-head"><span class="shot-id">P08</span><span class="shot-title">Bottle opened</span></div>
+            <p><strong>50–70 mm close.</strong> Cap, cork or opening mechanism.</p>
+            <div class="sub">Sound: CLICK / POP. Use the transient to motivate the next cut.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P09">
+          <div>
+            <div class="shot-head"><span class="shot-id">P09</span><span class="shot-title">Jigger exact fill</span></div>
+            <p><strong>70 mm close profile.</strong> Fill precisely to the edge.</p>
+            <div class="sub">Sound: liquid + bottle handling. Hold slightly longer, around 1 s.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P10">
+          <div>
+            <div class="shot-head"><span class="shot-id">P10</span><span class="shot-title">Tins lock</span></div>
+            <p><strong>Tight.</strong> Shaker tins lock together in one clean movement.</p>
+            <div class="sub">Sound: CLACK. Treat as an important percussive transient.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P11">
+          <div>
+            <div class="shot-head"><span class="shot-id">P11</span><span class="shot-title">Tools aligned</span></div>
+            <p><strong>Top-down or 45°.</strong> One final tiny adjustment to napkin, jigger, tools or garnish.</p>
+            <div class="sub">Purpose: communicate precision / obsessive readiness.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P12">
+          <div>
+            <div class="shot-head"><span class="shot-id">P12</span><span class="shot-title">Counter wipe</span></div>
+            <p><strong>35–50 mm lateral.</strong> Cloth passes across the entire frame.</p>
+            <div class="sub">Sound: SHHHHHK. Use the motion as a transition.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P13">
+          <div>
+            <div class="shot-head"><span class="shot-id">P13</span><span class="shot-title">READY WIDE</span></div>
+            <p><strong>24–28 mm locked wide.</strong> Finished workstation. Bartender enters, checks it once, then stops.</p>
+            <div class="sub">Let distant crowd/stage become audible here. Hold 2–3 s. Let the frame breathe.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="prepare" data-id="P14">
+          <div>
+            <div class="shot-head"><span class="shot-id">P14</span><span class="shot-title">First glass / first order</span></div>
+            <p><strong>50 mm.</strong> Hand enters and takes the first glass, or the first customer/order arrives.</p>
+            <div class="sub">Sound: one clean glass sound. Cut immediately to black.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="card">
+        <details open>
+          <summary>Sound shape</summary>
+          <div class="details-body">
+            <div class="sound-code">silence
+
+THUD
+
+pause
+
+CLACK
+
+pause
+
+SCRAPE
+CHOP
+POP
+POUR
+CLACK
+SHHHHK
+
+festival ambience
+
+CUT</div>
+            <p>No need for a logo sting. The title, account, sound and visual grammar already identify the piece.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="pulse" data-section="pulse">
+      <div class="section-title">
+        <h2>02 — PULSE</h2>
+        <div class="count section-count" data-for="pulse">0 / 0</div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="kicker">Rhythm / service</div>
+          <div class="big-word">PULSE</div>
+          <div class="meta">
+            <div><strong>Length</strong><span>20–25 s</span></div>
+            <div><strong>Voice</strong><span>None</span></div>
+            <div><strong>Music</strong><span>Service itself</span></div>
+            <div><strong>Story</strong><span>Action → rhythm → flow</span></div>
+          </div>
+        </div>
+
+        <details open>
+          <summary>Creative direction</summary>
+          <div class="details-body">
+            <p>This reel establishes Zest as the exception inside a beer festival. Begin with beer imagery, then interrupt it with a shaker impact. No explanatory text is needed.</p>
+            <p>The edit should gradually turn bar sounds into percussion. Later, stage bass, crowd and music can bleed into the rhythm until it becomes hard to tell whether the festival is driving the bar or the bar is generating the beat.</p>
+            <div class="callout"><strong>Rule:</strong> camera follows the work, not the drink. Cocktails are the result of the choreography, not the subject.</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F01">
+          <div><div class="shot-head"><span class="shot-id">F01</span><span class="shot-title">Beer #1</span></div><p><strong>Tight.</strong> Beer tap pouring.</p><div class="sub">Sound: hiss. 0.3–0.5 s.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F02">
+          <div><div class="shot-head"><span class="shot-id">F02</span><span class="shot-title">Beer #2</span></div><p><strong>Different stand / composition.</strong> Another beer pour.</p><div class="sub">Sound: hiss. 0.3–0.5 s.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F03">
+          <div><div class="shot-head"><span class="shot-id">F03</span><span class="shot-title">Beer #3</span></div><p><strong>Third variation.</strong> Beer hits glass / foam rises.</p><div class="sub">Sound: pour / foam. 0.3–0.5 s.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F04">
+          <div><div class="shot-head"><span class="shot-id">F04</span><span class="shot-title">INTERRUPTION</span></div><p><strong>Very tight.</strong> Zest shaker slammed onto counter.</p><div class="sub">Sound: CLACK. Hard sonic break. This is the moment the other language enters.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F05">
+          <div><div class="shot-head"><span class="shot-id">F05</span><span class="shot-title">TITLE / COVER</span></div><p><strong>28–35 mm locked medium-wide, behind/side of bar.</strong> Bartender crosses through frame while another works.</p><div class="sub">PULSE behind foreground bartender. Shoot photo afterward.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F06">
+          <div><div class="shot-head"><span class="shot-id">F06</span><span class="shot-title">Order arrives</span></div><p><strong>50 mm.</strong> Hand, POS or order enters frame.</p><div class="sub">No need to read text clearly — just communicate the next task arriving.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F07">
+          <div><div class="shot-head"><span class="shot-id">F07</span><span class="shot-title">Fast ice scoop</span></div><p><strong>Tight.</strong> One quick scoop.</p><div class="sub">25 fps. Speed matters here.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F08">
+          <div><div class="shot-head"><span class="shot-id">F08</span><span class="shot-title">Bottle grab</span></div><p><strong>50–70 mm.</strong> Hand enters, bottle immediately leaves frame.</p><div class="sub">Do not follow the bottle.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F09">
+          <div><div class="shot-head"><span class="shot-id">F09</span><span class="shot-title">Double action</span></div><p><strong>Medium, static.</strong> Two bartenders performing different actions simultaneously.</p><div class="sub">Let coordinated movement happen inside the frame.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F10">
+          <div><div class="shot-head"><span class="shot-id">F10</span><span class="shot-title">Jigger fast fill</span></div><p><strong>Close.</strong> Fast, accurate fill.</p><div class="sub">Cut exactly when liquid stops.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F11">
+          <div><div class="shot-head"><span class="shot-id">F11</span><span class="shot-title">Tin lock</span></div><p><strong>Close.</strong> Shaker closes.</p><div class="sub">Use as percussion.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F12">
+          <div><div class="shot-head"><span class="shot-id">F12</span><span class="shot-title">Shake</span></div><p><strong>Medium profile.</strong> Full upper-body shaking action.</p><div class="sub">25 fps. Energetic, not slow-motion glamour.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F13">
+          <div><div class="shot-head"><span class="shot-id">F13</span><span class="shot-title">Second shaker</span></div><p><strong>Different angle.</strong> Another bartender enters the rhythm.</p><div class="sub">Match action or cut on the sonic beat.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F14">
+          <div><div class="shot-head"><span class="shot-id">F14</span><span class="shot-title">Strain</span></div><p><strong>70 mm close.</strong> Liquid enters glass.</p><div class="sub">Allow yourself one beauty shot; do not turn the reel into cocktail porn.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F15">
+          <div><div class="shot-head"><span class="shot-id">F15</span><span class="shot-title">Garnish</span></div><p><strong>Tight.</strong> Fast, precise placement.</p><div class="sub">50 fps candidate.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F16">
+          <div><div class="shot-head"><span class="shot-id">F16</span><span class="shot-title">Handoff</span></div><p><strong>35–50 mm.</strong> Zest hand → customer hand.</p><div class="sub">Do not linger on the customer holding a posed drink.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F17">
+          <div><div class="shot-head"><span class="shot-id">F17</span><span class="shot-title">Reset</span></div><p><strong>Tight.</strong> Empty spot is immediately filled by the next glass or tool.</p><div class="sub">Purpose: service never stops.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F18">
+          <div><div class="shot-head"><span class="shot-id">F18</span><span class="shot-title">STATIC FLOW</span></div><p><strong>24–28 mm locked wide.</strong> Whole booth operating at peak service with clean, coordinated movement.</p><div class="sub">Shoot 20–30 uninterrupted seconds. In the edit, let 2–4 s breathe. Essential shot.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F19">
+          <div><div class="shot-head"><span class="shot-id">F19</span><span class="shot-title">Crossing paths</span></div><p><strong>Wide / same space.</strong> Two staff naturally cross each other.</p><div class="sub">Look for real service choreography, not staged movement.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F20">
+          <div><div class="shot-head"><span class="shot-id">F20</span><span class="shot-title">Stage spill</span></div><p><strong>70–200 mm compressed.</strong> Bartender foreground, stage lights or crowd behind.</p><div class="sub">Connect Zest to the wider event without leaving the work.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F21">
+          <div><div class="shot-head"><span class="shot-id">F21</span><span class="shot-title">Hands geometry</span></div><p><strong>Overhead if practical.</strong> Two or three drinks in progress simultaneously.</p><div class="sub">Not a tutorial — look for geometry and rhythm.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F22">
+          <div><div class="shot-head"><span class="shot-id">F22</span><span class="shot-title">Glass callback</span></div><p><strong>Static close.</strong> Glass lands in a composition that recalls an earlier shot.</p><div class="sub">Useful rhythmic visual callback.</div></div>
+        </label>
+        <label class="shot">
+          <input type="checkbox" data-section="pulse" data-id="F23">
+          <div><div class="shot-head"><span class="shot-id">F23</span><span class="shot-title">Wipe / next order</span></div><p><strong>Close.</strong> Quick reset immediately followed by another hand entering.</p><div class="sub">Good potential loop ending.</div></div>
+        </label>
+      </div>
+
+      <div class="card">
+        <details open>
+          <summary>Sound shape</summary>
+          <div class="details-body">
+            <div class="sound-code">beer
+beer
+beer
+
+CLACK
+
+ice
+tin
+jigger
+glass
+shake
+glass
+tin
+shake
+
++ stage bass
++ crowd
++ applause
++ kick
+
+CUT
+
+one final CLACK</div>
+            <p>Rhythmic editing does not mean every shot must be 0.2 seconds. The long static wide is an intentional interruption that proves the coordination is real.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="after" data-section="after">
+      <div class="section-title">
+        <h2>03 — AFTER</h2>
+        <div class="count section-count" data-for="after">0 / 0</div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="kicker">Complete cycle / aftermovie</div>
+          <div class="big-word">AFTER</div>
+          <div class="meta">
+            <div><strong>Length</strong><span>35–45 s</span></div>
+            <div><strong>Voice</strong><span>None</span></div>
+            <div><strong>Music</strong><span>Sparse / optional</span></div>
+            <div><strong>Story</strong><span>Empty → alive → empty</span></div>
+          </div>
+        </div>
+
+        <details open>
+          <summary>Creative direction</summary>
+          <div class="details-body">
+            <p>This is not a generic festival aftermovie with some Zest shots. It is a film about operating a bar for five nights inside a festival.</p>
+            <p>The ending matters as much as the peak. Begin with emptiness, escalate through preparation and pressure, then deliberately decompress into cleanup, lights off and silence.</p>
+            <p>Do <strong>not</strong> structure it as Thursday / Friday / Saturday / Sunday / Monday. Build one emotional cycle instead.</p>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Suggested time curve</summary>
+          <div class="details-body">
+            <p><strong>0–8 s — Anticipation:</strong> empty, setup, lights, first customer.</p>
+            <p><strong>8–25 s — Escalation:</strong> festival appears, crowd grows, bar accelerates.</p>
+            <p><strong>25–32 s — Peak:</strong> densest service, stage, crowd, people, pressure.</p>
+            <p><strong>32–42 s — Decompression:</strong> last order, cleanup, cloth, lights, empty.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A01"><div><div class="shot-head"><span class="shot-id">A01</span><span class="shot-title">Empty festival</span></div><p><strong>24 mm wide.</strong> Venue/stage before people arrive.</p><div class="sub">Get this early. Once the event is full, this opportunity is gone.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A02"><div><div class="shot-head"><span class="shot-id">A02</span><span class="shot-title">Empty Zest</span></div><p><strong>Locked wide.</strong> Booth before opening.</p><div class="sub">Critical before/after anchor. Save exact camera position for A33.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A03"><div><div class="shot-head"><span class="shot-id">A03</span><span class="shot-title">Arrival</span></div><p><strong>Low / medium.</strong> Cases, crates, tools entering.</p><div class="sub">Callback to PREPARE without repeating the whole reel.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A04"><div><div class="shot-head"><span class="shot-id">A04</span><span class="shot-title">Lights on</span></div><p><strong>Static.</strong> Booth, sign or practical light switches on.</p><div class="sub">Natural transition from empty to alive.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A05"><div><div class="shot-head"><span class="shot-id">A05</span><span class="shot-title">First preparation</span></div><p><strong>Medium.</strong> Bartender begins work.</p><div class="sub">Use as a short cue; PREPARE already owns the detailed ritual.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A06"><div><div class="shot-head"><span class="shot-id">A06</span><span class="shot-title">TITLE / COVER</span></div><p><strong>28–35 mm, carefully composed.</strong> Bartender foreground with emerging crowd/event behind.</p><div class="sub">AFTER behind person. Shoot a photo of the same composition. Blue hour / night is ideal.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A07"><div><div class="shot-head"><span class="shot-id">A07</span><span class="shot-title">First customer</span></div><p><strong>Medium observational.</strong> Natural first interaction.</p><div class="sub">No posing.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A08"><div><div class="shot-head"><span class="shot-id">A08</span><span class="shot-title">First handoff</span></div><p><strong>Close / medium.</strong> Glass crosses counter.</p><div class="sub">Completes the opening chapter.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A09"><div><div class="shot-head"><span class="shot-id">A09</span><span class="shot-title">Festival context</span></div><p><strong>16–24 mm wide.</strong> Crowd + stage / venue.</p><div class="sub">Hold longer than generic B-roll. Let viewers understand where they are.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A10"><div><div class="shot-head"><span class="shot-id">A10</span><span class="shot-title">Stage performer</span></div><p><strong>70–200 mm.</strong> One strong performance gesture or lighting moment.</p><div class="sub">Do not let this become concert coverage.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A11"><div><div class="shot-head"><span class="shot-id">A11</span><span class="shot-title">Zest through crowd</span></div><p><strong>Medium-long lens.</strong> Booth visible through moving people.</p><div class="sub">Makes Zest feel embedded in the event.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A12"><div><div class="shot-head"><span class="shot-id">A12</span><span class="shot-title">Beer context</span></div><p><strong>50 mm.</strong> Beer imagery nearby.</p><div class="sub">Only one or two shots are needed.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A13"><div><div class="shot-head"><span class="shot-id">A13</span><span class="shot-title">Beer cocktail bridge</span></div><p><strong>50–70 mm.</strong> Beer enters a cocktail or visually meets Zest’s preparation.</p><div class="sub">Conceptual bridge specific to Bolle di Malto.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A14"><div><div class="shot-head"><span class="shot-id">A14</span><span class="shot-title">Work portrait</span></div><p><strong>50–70 mm.</strong> Bartender concentrating.</p><div class="sub">Eyes / hands / task. Not looking into camera.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A15"><div><div class="shot-head"><span class="shot-id">A15</span><span class="shot-title">Teaching / correction moment</span></div><p><strong>70 mm.</strong> Small correction, help, or skill transfer if it naturally occurs.</p><div class="sub">Excellent link to academy identity.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A16"><div><div class="shot-head"><span class="shot-id">A16</span><span class="shot-title">Crowd increases</span></div><p><strong>Locked wide.</strong> Same space with visibly more people.</p><div class="sub">Matching earlier composition makes escalation readable.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A17"><div><div class="shot-head"><span class="shot-id">A17</span><span class="shot-title">Multiple orders</span></div><p><strong>Medium.</strong> Hands crossing, objects appearing/disappearing.</p><div class="sub">Controlled coordination, not product coverage.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A18"><div><div class="shot-head"><span class="shot-id">A18</span><span class="shot-title">Peak service wide</span></div><p><strong>24–35 mm locked wide.</strong> Everyone working at full pressure.</p><div class="sub">Essential shot. Hold long enough to prove the coordination is real.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A19"><div><div class="shot-head"><span class="shot-id">A19</span><span class="shot-title">Peak detail</span></div><p><strong>50–70 mm.</strong> Fast hands, repeated orders, precise refills, clean movements and concentration.</p><div class="sub">Show intensity through precision, not disorder.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A20"><div><div class="shot-head"><span class="shot-id">A20</span><span class="shot-title">Stage + Zest merge</span></div><p><strong>Telephoto.</strong> Stage lighting affects bartender or booth.</p><div class="sub">Make both worlds coexist in one frame.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A21"><div><div class="shot-head"><span class="shot-id">A21</span><span class="shot-title">Customer moment</span></div><p><strong>Medium.</strong> Real reaction, conversation, laugh or handoff.</p><div class="sub">Avoid “cheers to camera.”</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A22"><div><div class="shot-head"><span class="shot-id">A22</span><span class="shot-title">Team micro-moment</span></div><p><strong>Medium.</strong> Glance, joke, tiny pause, assistance.</p><div class="sub">Humanity without skit.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A23"><div><div class="shot-head"><span class="shot-id">A23</span><span class="shot-title">One hero drink</span></div><p><strong>50–70 mm.</strong> One genuinely beautiful finished cocktail.</p><div class="sub">Only one deliberate cocktail-porn shot in the aftermovie.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A24"><div><div class="shot-head"><span class="shot-id">A24</span><span class="shot-title">Back to work</span></div><p><strong>Medium.</strong> Immediately grab next order after the hero shot.</p><div class="sub">Stops the film from falling into conventional product-ad language.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A25"><div><div class="shot-head"><span class="shot-id">A25</span><span class="shot-title">Late-night crowd</span></div><p><strong>Wide.</strong> Packed festival / lights / movement.</p><div class="sub">Peak of the film.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A26"><div><div class="shot-head"><span class="shot-id">A26</span><span class="shot-title">Last service</span></div><p><strong>Close / medium.</strong> One of the final drinks or handoffs.</p><div class="sub">Editing pace starts dropping from here.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A27"><div><div class="shot-head"><span class="shot-id">A27</span><span class="shot-title">End-of-night still life</span></div><p><strong>Static.</strong> A composed end-of-night frame: glassware, tools and clean traces of service.</p><div class="sub">Keep it natural but visually controlled; avoid rubbish or messy clutter.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A28"><div><div class="shot-head"><span class="shot-id">A28</span><span class="shot-title">Ice drained / bin emptied</span></div><p><strong>Close.</strong> Physical end-of-service action.</p><div class="sub">Strong sound opportunity.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A29"><div><div class="shot-head"><span class="shot-id">A29</span><span class="shot-title">Bottles removed</span></div><p><strong>Locked.</strong> Reverse of preparation.</p><div class="sub">Story begins closing itself.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A30"><div><div class="shot-head"><span class="shot-id">A30</span><span class="shot-title">Glasses stacked</span></div><p><strong>Close.</strong> Final repetitions.</p><div class="sub">Edit should be noticeably slower now.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A31"><div><div class="shot-head"><span class="shot-id">A31</span><span class="shot-title">Counter wipe callback</span></div><p><strong>Same conceptual frame as P12.</strong> One long wipe.</p><div class="sub">Direct callback to PREPARE.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A32"><div><div class="shot-head"><span class="shot-id">A32</span><span class="shot-title">Lights off</span></div><p><strong>Static.</strong> Zest falls dark.</p><div class="sub">Let sound disappear with the light.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A33"><div><div class="shot-head"><span class="shot-id">A33</span><span class="shot-title">Empty booth match</span></div><p><strong>Same composition as A02.</strong> Nobody there.</p><div class="sub">Hold roughly 2 s. Protect camera height, focal length and tripod position.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="after" data-id="A34"><div><div class="shot-head"><span class="shot-id">A34</span><span class="shot-title">Black / residual ambience</span></div><p>End on black with only the remaining distant festival / room sound.</p><div class="sub">No explosive logo sting required.</div></div></label>
+      </div>
+    </section>
+
+
+    <section id="stories" data-section="stories">
+      <div class="section-title">
+        <h2>Stories — nightly diary</h2>
+        <div class="count section-count" data-for="stories">0 / 0</div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="kicker">15 curated observations / 5 nights</div>
+          <div class="big-word">STORIES</div>
+          <p>Stories are not mini-Reels and not generic live updates. They are <strong>precise observations from a specific moment</strong>: short, polished, mostly single-shot or very lightly edited, and always meaningful.</p>
+          <div class="meta">
+            <div><strong>Length</strong><span>6–12 s</span></div>
+            <div><strong>Voice</strong><span>None</span></div>
+            <div><strong>Text</strong><span>1 word / time</span></div>
+            <div><strong>Sound</strong><span>Real first</span></div>
+          </div>
+          <div class="callout"><strong>Classy rule:</strong> show intensity without disorder. No rubbish, chaotic counters, exhausted “survival” imagery or deliberately ugly behind-the-scenes details. Energy comes from movement, sound, light, repetition and coordination.</div>
+        </div>
+
+        <details open>
+          <summary>Story visual grammar</summary>
+          <div class="details-body">
+            <p>Use the same bold sans-serif and subject-over-title mask language as the Reels when the frame supports it. Do not force the effect onto every Story.</p>
+            <p>Prefer <strong>one strong composition</strong> over a montage. If a Story uses cuts, every cut should have a sonic or conceptual reason.</p>
+            <p>No GIFs, stickers, polls or “come find us!” social clutter in this curated series. The Story itself should communicate the moment.</p>
+            <p><strong>Stories = moments. Reels = constructions.</strong> If an 8-second real moment already works, preserve it instead of cutting it into Reel-style coverage.</p>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Five-night arc</summary>
+          <div class="details-body">
+            <div class="sound-code">THU   OPEN → LOUDER → NIGHT
+FRI   RHYTHM → TEMPO → 00:00
+SAT   BEFORE → FLOW → LIVE
+SUN   MIX → SYNC → MIDNIGHT
+MON   READY → LAST → END</div>
+            <p>Read together, the Stories move from arrival to rhythm, service, musical intersection and closure without ever leaving Zest’s elegant visual world.</p>
+          </div>
+        </details>
+      </div>
+
+      <!-- THURSDAY -->
+      <div class="card" id="stories-thu">
+        <div class="pad">
+          <div class="kicker">Thursday 3 September · first night</div>
+          <h3 style="margin:.15rem 0 .35rem;font-size:1.35rem;letter-spacing:-.03em">Introduction / transformation</h3>
+          <p style="margin:.35rem 0 0;color:#c9c9cf">Music: Marciapé Street Band · Damasco · Rocketti Band · Pippo Palmieri DJ set.</p>
+        </div>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST01">
+          <div>
+            <div class="shot-head"><span class="shot-id">THU 01</span><span class="shot-title">OPEN</span></div>
+            <p><strong>Around 18:15–18:45 · locked medium-wide · 7–9 s.</strong> Start from a perfectly prepared station. A bartender enters or performs the first meaningful service action; ideally the first customer/order begins.</p>
+            <div class="sub">Title: OPEN behind bartender if masking works. Sound: sparse festival ambience + glass / ice / first action. Meaning: Zest is now operational.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST02">
+          <div>
+            <div class="shot-head"><span class="shot-id">THU 02</span><span class="shot-title">LOUDER</span></div>
+            <p><strong>Around 22:00–23:00 · locked medium-wide · 7–9 s.</strong> Bartender working in foreground, controlled customer movement behind, stage light or concert energy deeper in frame.</p>
+            <div class="sub">Title: LOUDER briefly, then let the frame play. Real concert + service sound. Meaning: same place, several hours later, a different energy state.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST03">
+          <div>
+            <div class="shot-head"><span class="shot-id">THU 03</span><span class="shot-title">NIGHT</span></div>
+            <p><strong>Late evening / DJ set · 8–10 s.</strong> Elegant nocturnal observation: bartender, glassware or Zest detail foreground; warm practicals, silhouettes or festival lights behind. Static or one very slow deliberate movement.</p>
+            <div class="sub">Title: NIGHT. Real late-night ambience. Meaning: not an action, but Zest’s visual state after dark.</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- FRIDAY -->
+      <div class="card" id="stories-fri">
+        <div class="pad">
+          <div class="kicker">Friday 4 September</div>
+          <h3 style="margin:.15rem 0 .35rem;font-size:1.35rem;letter-spacing:-.03em">Repetition / music</h3>
+          <p style="margin:.35rem 0 0;color:#c9c9cf">Music: Gassman · Ansia · Tattici dello Zen · Kara Italia DJ set.</p>
+        </div>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST04">
+          <div>
+            <div class="shot-head"><span class="shot-id">FRI 01</span><span class="shot-title">RHYTHM</span></div>
+            <p><strong>6–8 s · 3–4 cuts maximum.</strong> Choose one repeated gesture and show it several times: pour → glass away; shaker close → shaker close; handoff → handoff.</p>
+            <div class="sub">Every real transient lands on the cut. Title: RHYTHM. Meaning: service as repeated movement performed precisely.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST05">
+          <div>
+            <div class="shot-head"><span class="shot-id">FRI 02</span><span class="shot-title">TEMPO</span></div>
+            <p><strong>Around 22:00–23:00 · 7–9 s.</strong> Intercut a few bar actions with musical gestures from the stage: shaker ↔ drummer; glass impact ↔ beat; bartender turn ↔ light change.</p>
+            <div class="sub">Use live music as soundtrack. Title: TEMPO. Difference from RHYTHM: RHYTHM is internal repetition; TEMPO is the bar meeting the music outside.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST06">
+          <div>
+            <div class="shot-head"><span class="shot-id">FRI 03</span><span class="shot-title">00:00</span></div>
+            <p><strong>At midnight · one strong 8 s shot.</strong> Find a layered composition: crowd foreground / Zest middle / stage behind, or bartender foreground with late-night lights and movement.</p>
+            <div class="sub">Title only: 00:00. Treat the time as documentary metadata: this is what this place looks and sounds like at midnight.</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- SATURDAY -->
+      <div class="card" id="stories-sat">
+        <div class="pad">
+          <div class="kicker">Saturday 5 September · substitute operator</div>
+          <h3 style="margin:.15rem 0 .35rem;font-size:1.35rem;letter-spacing:-.03em">Simple / reliable / elegant</h3>
+          <p style="margin:.35rem 0 0;color:#c9c9cf">Music: Gassman · Diastema · Forever Young DJ set.</p>
+          <div class="callout"><strong>Substitute brief:</strong> these three are deliberately simple. Prioritise clean composition, vertical framing, 25 fps, stable camera and long uninterrupted takes. Do not invent extra camera movement.</div>
+        </div>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST07">
+          <div>
+            <div class="shot-head"><span class="shot-id">SAT 01</span><span class="shot-title">BEFORE</span></div>
+            <p><strong>Before the crowd becomes large · 24–35 mm · locked · record 10–15 s.</strong> Show the clean stand and at least one bartender working. Frame the early event atmosphere around them.</p>
+            <div class="sub">No pan, zoom or follow. You will select 7–9 s later and add BEFORE in post.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST08">
+          <div>
+            <div class="shot-head"><span class="shot-id">SAT 02</span><span class="shot-title">FLOW</span></div>
+            <p><strong>Busy service · 24–35 mm · locked · record 15–20 s.</strong> Find an angle with at least two bartenders visible working simultaneously. Let drinks, hands and people move through the frame naturally.</p>
+            <div class="sub">Do not track anyone. Meaning: coordination, not pressure. You will take the best 7–9 s and add FLOW afterward.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST09">
+          <div>
+            <div class="shot-head"><span class="shot-id">SAT 03</span><span class="shot-title">LIVE</span></div>
+            <p><strong>7–10 s · one elegant connection between Zest and the concert.</strong> Bartender foreground + stage behind, Zest signage + stage lights, or customers at Zest with performance visible deeper in frame.</p>
+            <div class="sub">Static or extremely controlled. Title: LIVE. Meaning: live music, live event, live service.</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- SUNDAY -->
+      <div class="card" id="stories-sun">
+        <div class="pad">
+          <div class="kicker">Sunday 6 September</div>
+          <h3 style="margin:.15rem 0 .35rem;font-size:1.35rem;letter-spacing:-.03em">Intersection / experimentation</h3>
+          <p style="margin:.35rem 0 0;color:#c9c9cf">Music: Cento’s Band · Ophelia Lia · Roy Paci & Aretuska con Pau · Geo From Hell DJ set.</p>
+        </div>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST10">
+          <div>
+            <div class="shot-head"><span class="shot-id">SUN 01</span><span class="shot-title">MIX</span></div>
+            <p><strong>6–9 s · lightly edited.</strong> Tell the beer-cocktail idea without making a recipe: beer context → Zest ingredient → shaker / technique → beer entering or meeting the cocktail → elegant handoff.</p>
+            <div class="sub">Title: MIX. Meaning: beer + cocktail, event + Zest, different techniques meeting each other.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST11">
+          <div>
+            <div class="shot-head"><span class="shot-id">SUN 02</span><span class="shot-title">SYNC</span></div>
+            <p><strong>During Roy Paci · around 8 s.</strong> Use brass and percussion as the content: horn gesture ↔ shaker; musical hit ↔ glass placement; stage movement ↔ pour. Keep it precise rather than frantic.</p>
+            <div class="sub">Live concert audio only. Title: SYNC. The brass is the material; SYNC is the concept, so the idea remains reusable beyond this event.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST12">
+          <div>
+            <div class="shot-head"><span class="shot-id">SUN 03</span><span class="shot-title">MIDNIGHT</span></div>
+            <p><strong>Late night · 8–12 s.</strong> The most atmospheric Story: reflections, silhouettes, glass, compressed crowd, bartender partly obscured, deep festival lights. One image or 2–3 slow shots maximum.</p>
+            <div class="sub">Title: MIDNIGHT. Unlike Friday’s factual 00:00, this is cinematic and nocturnal.</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- MONDAY -->
+      <div class="card" id="stories-mon">
+        <div class="pad">
+          <div class="kicker">Monday 7 September · final night</div>
+          <h3 style="margin:.15rem 0 .35rem;font-size:1.35rem;letter-spacing:-.03em">Completion / closure</h3>
+          <p style="margin:.35rem 0 0;color:#c9c9cf">Music: Gassman · Rino Gaetano Band · Tiromancino.</p>
+        </div>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST13">
+          <div>
+            <div class="shot-head"><span class="shot-id">MON 01</span><span class="shot-title">READY</span></div>
+            <p><strong>Early evening · 7–9 s.</strong> Everything immaculate. One bartender performs a tiny final adjustment or calm first action. No preparation montage needed.</p>
+            <div class="sub">Title: READY. Meaning: fifth night, same standard.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST14">
+          <div>
+            <div class="shot-head"><span class="shot-id">MON 02</span><span class="shot-title">LAST</span></div>
+            <p><strong>During the proper evening / Tiromancino · 8–10 s.</strong> Compose one strong image containing Zest, people, music and night. A foreground bartender can pass through the title.</p>
+            <div class="sub">Title: LAST. Let it remain ambiguous: last night, last service, last concert, last chance.</div>
+          </div>
+        </label>
+
+        <label class="shot">
+          <input type="checkbox" data-section="stories" data-id="ST15">
+          <div>
+            <div class="shot-head"><span class="shot-id">MON 03</span><span class="shot-title">END</span></div>
+            <p><strong>After final service · 8–12 s.</strong> Keep closure visually controlled: final glass removed or placed, one clean final gesture, practical light switched off, then the empty stand.</p>
+            <div class="sub">Title: END. No music. Avoid rubbish or dismantling imagery. Let real residual ambience fade into black.</div>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <section id="audio" data-section="audio">
+      <div class="section-title">
+        <h2>Audio capture</h2>
+        <div class="count section-count" data-for="audio">0 / 0</div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <div class="kicker">Permanent Zest sound library</div>
+          <p>After filming each important action, record it again specifically for sound. Get the microphone roughly 10–30 cm away when practical. Capture several versions of every useful transient.</p>
+        </div>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S01"><div><div class="shot-head"><span class="shot-id">S01</span><span class="shot-title">Ice scoop</span></div><p>Several scoops through ice at different speeds.</p><div class="sub">Get both aggressive scrape and controlled scoop.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S02"><div><div class="shot-head"><span class="shot-id">S02</span><span class="shot-title">Single ice cube</span></div><p>Single cube dropping into metal, plastic and glass if available.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S03"><div><div class="shot-head"><span class="shot-id">S03</span><span class="shot-title">Handful of ice</span></div><p>Several cubes dropped together.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S04"><div><div class="shot-head"><span class="shot-id">S04</span><span class="shot-title">Glass gentle placement</span></div><p>Soft glass-on-counter placement.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S05"><div><div class="shot-head"><span class="shot-id">S05</span><span class="shot-title">Glass hard placement</span></div><p>More percussive glass CLACK, safely.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S06"><div><div class="shot-head"><span class="shot-id">S06</span><span class="shot-title">Multiple glasses</span></div><p>Several glasses being moved / aligned / stacked.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S07"><div><div class="shot-head"><span class="shot-id">S07</span><span class="shot-title">Shaker close</span></div><p>Several clean tin-lock impacts.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S08"><div><div class="shot-head"><span class="shot-id">S08</span><span class="shot-title">Shaker open</span></div><p>Break/open sound after shaking.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S09"><div><div class="shot-head"><span class="shot-id">S09</span><span class="shot-title">Jigger / bar spoon metal</span></div><p>Useful tiny metallic transients.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S10"><div><div class="shot-head"><span class="shot-id">S10</span><span class="shot-title">Citrus cut</span></div><p>Knife through citrus, several takes.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S11"><div><div class="shot-head"><span class="shot-id">S11</span><span class="shot-title">Peel / scrape</span></div><p>Peeler, knife scrape, board movement.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S12"><div><div class="shot-head"><span class="shot-id">S12</span><span class="shot-title">Citrus squeeze</span></div><p>Squeeze / expressed oils / wet handling.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S13"><div><div class="shot-head"><span class="shot-id">S13</span><span class="shot-title">Bottle cap</span></div><p>Twist cap / crown cap / other opening mechanism.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S14"><div><div class="shot-head"><span class="shot-id">S14</span><span class="shot-title">Bottle pop</span></div><p>Cork / stopper / stronger opening transient if available.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S15"><div><div class="shot-head"><span class="shot-id">S15</span><span class="shot-title">Pour</span></div><p>Long clean liquid pour into jigger / glass.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S16"><div><div class="shot-head"><span class="shot-id">S16</span><span class="shot-title">Carbonation / fizz</span></div><p>Close bubbling or beer / soda fizz.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S17"><div><div class="shot-head"><span class="shot-id">S17</span><span class="shot-title">Counter wipe</span></div><p>Several cloth passes with different pressure.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S18"><div><div class="shot-head"><span class="shot-id">S18</span><span class="shot-title">Object slide</span></div><p>Bottle / case / tool sliding on bar surface.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S19"><div><div class="shot-head"><span class="shot-id">S19</span><span class="shot-title">Clean bar ambience</span></div><p>30–60 s of the bar with no deliberate handling near the mic.</p><div class="sub">Capture at quiet, medium and peak service if possible.</div></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S20"><div><div class="shot-head"><span class="shot-id">S20</span><span class="shot-title">Festival ambience</span></div><p>30–60 s crowd/stage bed from a useful position.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="audio" data-id="S21"><div><div class="shot-head"><span class="shot-id">S21</span><span class="shot-title">Post-service ambience</span></div><p>30–60 s after close, when the sonic world has emptied out.</p></div></label>
+      </div>
+    </section>
+
+    <section id="daily" data-section="daily">
+      <div class="section-title">
+        <h2>Daily insurance</h2>
+        <div class="count section-count" data-for="daily">0 / 0</div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <p>Across five nights, collect at least one of each of these every day. This avoids coming back with 480 close-ups of shaker tins but no sense of time, people or scale.</p>
+          <p class="tiny">Tip: these are global checkboxes. If you want day-by-day tracking, reset them after each night.</p>
+        </div>
+      </div>
+
+      <div class="shotlist">
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D01"><div><div class="shot-head"><span class="shot-id">D01</span><span class="shot-title">Environment</span></div><p>One strong wide of the whole event.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D02"><div><div class="shot-head"><span class="shot-id">D02</span><span class="shot-title">Zest wide</span></div><p>One locked wide of the complete stand.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D03"><div><div class="shot-head"><span class="shot-id">D03</span><span class="shot-title">Team</span></div><p>One observational human moment.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D04"><div><div class="shot-head"><span class="shot-id">D04</span><span class="shot-title">New work action</span></div><p>One action you have not already filmed well.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D05"><div><div class="shot-head"><span class="shot-id">D05</span><span class="shot-title">Customer</span></div><p>One natural interaction.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D06"><div><div class="shot-head"><span class="shot-id">D06</span><span class="shot-title">Stage</span></div><p>One good contextual stage/performance shot.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D07"><div><div class="shot-head"><span class="shot-id">D07</span><span class="shot-title">Specific detail</span></div><p>One strange / specific / visually memorable detail.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D08"><div><div class="shot-head"><span class="shot-id">D08</span><span class="shot-title">Bar ambience</span></div><p>30–60 seconds clean ambience.</p></div></label>
+        <label class="shot"><input type="checkbox" data-section="daily" data-id="D09"><div><div class="shot-head"><span class="shot-id">D09</span><span class="shot-title">Closing moment</span></div><p>One cleanup / fatigue / shutdown / empty-space moment.</p></div></label>
+      </div>
+    </section>
+
+    <section id="grammar">
+      <div class="section-title"><h2>Shooting grammar</h2></div>
+
+      <div class="card">
+        <details open>
+          <summary>Frame rate</summary>
+          <div class="details-body">
+            <div class="rule-grid">
+              <div class="rule"><strong>25 fps = reality</strong><span>Work, hands, service, people, wide shots, crowds, most bartending. Fast hands should look fast.</span></div>
+              <div class="rule"><strong>50 fps = attention</strong><span>Ice falling, citrus spray, garnish, liquid, one expression, one stage-light moment. Roughly 10–15% of footage maximum.</span></div>
+            </div>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Lens language</summary>
+          <div class="details-body">
+            <div class="rule-grid">
+              <div class="rule"><strong>24–35 mm</strong><span>Environment, choreography, reality, the whole system.</span></div>
+              <div class="rule"><strong>50–70 mm</strong><span>Work, hands, people, precise actions.</span></div>
+              <div class="rule"><strong>70–200 mm</strong><span>Occasional compressed stage/festival connection.</span></div>
+            </div>
+            <p>The wide locked shots are more important than endless macro B-roll. Watching multiple people coordinate in one frame communicates competence.</p>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Camera movement</summary>
+          <div class="details-body">
+            <div class="rule-grid">
+              <div class="rule"><strong>Locked = default</strong><span>Let action enter, cross and leave the frame.</span></div>
+              <div class="rule"><strong>Handheld = observation</strong><span>Human moments, imperfection, team micro-behaviour.</span></div>
+              <div class="rule"><strong>Slow push = rare emphasis</strong><span>Use only when a moment actually deserves it.</span></div>
+              <div class="rule"><strong>Gimbal = almost none</strong><span>No orbiting cocktails or generic event floating.</span></div>
+            </div>
+            <p>If the subject already moves beautifully, the camera does not need to.</p>
+          </div>
+        </details>
+
+        <details open>
+          <summary>Editing rules</summary>
+          <div class="details-body">
+            <p><strong>Sound creates transitions.</strong> Prefer hard cuts motivated by impacts, pours, wipes, opens and environmental changes.</p>
+            <p><strong>Do not hide the beer.</strong> Beer is the context that makes Zest’s difference legible. The beer cocktail can visually bridge the two worlds.</p>
+            <p><strong>Work over product.</strong> Follow hands, coordination, coordination, resets, repetition. The drink is the consequence.</p>
+            <p><strong>Quiet endings.</strong> Avoid ending every piece at the peak. Shutdown, wipe, darkness and residual ambience are part of the identity.</p>
+          </div>
+        </details>
+
+        <details>
+          <summary>Cover compositions</summary>
+          <div class="details-body">
+            <p><strong>PREPARE:</strong> bartender alone, relatively clean space, body slightly off-centre, one arm intersecting the title. Spacious and controlled.</p>
+            <p><strong>PULSE:</strong> peak service, multiple depth planes, foreground bartender crossing the typography while background work stays visible. Busy image, simple type.</p>
+            <p><strong>AFTER:</strong> most human/environmental. One bartender or team member foreground, stage/crowd behind, darker and more nocturnal.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn" id="expandAll" type="button">Expand explanations</button>
+        <button class="btn" id="collapseAll" type="button">Collapse explanations</button>
+        <button class="btn danger" id="resetChecks" type="button">Reset all checkboxes</button>
+      </div>
+    </section>
+
+    <footer>
+      ZEST / BOLLE DI MALTO — reels + stories field guide · checkbox state is saved on this device
+    </footer>
+  </div>
+
+<script>
+(() => {
+  const KEY = 'zest-bolle-checks-v1';
+  const checks = [...document.querySelectorAll('input[type="checkbox"][data-id]')];
+
+  function load() {
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) {}
+    checks.forEach(c => c.checked = !!saved[c.dataset.id]);
+  }
+
+  function save() {
+    const state = {};
+    checks.forEach(c => state[c.dataset.id] = c.checked);
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
+
+  function updateProgress() {
+    const done = checks.filter(c => c.checked).length;
+    const total = checks.length;
+    document.getElementById('overallLabel').textContent = `${done} / ${total}`;
+    document.getElementById('overallBar').style.width = `${total ? (done/total)*100 : 0}%`;
+
+    document.querySelectorAll('.section-count').forEach(el => {
+      const sec = el.dataset.for;
+      const list = checks.filter(c => c.dataset.section === sec);
+      const secDone = list.filter(c => c.checked).length;
+      el.textContent = `${secDone} / ${list.length}`;
+    });
+  }
+
+  checks.forEach(c => c.addEventListener('change', () => {
+    save();
+    updateProgress();
+  }));
+
+  document.getElementById('resetChecks').addEventListener('click', () => {
+    if (!confirm('Reset every shot and audio checkbox?')) return;
+    checks.forEach(c => c.checked = false);
+    save();
+    updateProgress();
+  });
+
+  document.getElementById('expandAll').addEventListener('click', () => {
+    document.querySelectorAll('details').forEach(d => d.open = true);
+  });
+
+  document.getElementById('collapseAll').addEventListener('click', () => {
+    document.querySelectorAll('details').forEach(d => d.open = false);
+  });
+
+  load();
+  updateProgress();
+})();
+</script>
+</body>
+</html>
